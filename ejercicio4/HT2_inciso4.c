@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------
  * Universidad del Valle de Guatemala
  * Curso:     CC3169 - Computacion Paralela y Distribuida
- * Autores:   Bryan Alberto Martínez Orellana 23542
+ * Miembros:  Bryan Alberto Martínez Orellana 23542
  *            Adriana Sophia Palacios Contreras 23044
  * Ejercicio: Hoja de Trabajo 02 - Introduccion a Open MPI
  *            Inciso 4
