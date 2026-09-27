@@ -26,8 +26,8 @@ int main(int argc, char *argv[]) {
 
     int rank;
     int size;
-    int pedidos[4];
-    int pedido_recibido;
+    int pedidos[8]; // Pares consecutivos: pedidos y empleados por ubicacion
+    int datos_recibidos[2];
 
     // Inicializa el entorno MPI
     MPI_Init(&argc, &argv);
@@ -53,20 +53,24 @@ int main(int argc, char *argv[]) {
     if (rank == 0) {
 
         pedidos[0] = 120;
-        pedidos[1] = 95;
-        pedidos[2] = 140;
-        pedidos[3] = 110;
+        pedidos[1] = 6;   // Empleados de la Oficina Central
+        pedidos[2] = 95;
+        pedidos[3] = 5;   // Empleados de la Sucursal 1
+        pedidos[4] = 140;
+        pedidos[5] = 7;   // Empleados de la Sucursal 2
+        pedidos[6] = 110;
+        pedidos[7] = 4;   // Empleados de la Sucursal 3
 
-        printf("Oficina Central: distribuyendo pedidos...\n");
+        printf("Oficina Central: distribuyendo pedidos y empleados...\n");
     }
 
-    // Distribuir un valor del arreglo a cada proceso
+    // Distribuir dos enteros consecutivos a cada proceso, incluido rank 0
     MPI_Scatter(
         pedidos,
-        1,
+        2,
         MPI_INT,
-        &pedido_recibido,
-        1,
+        datos_recibidos,
+        2,
         MPI_INT,
         0,
         MPI_COMM_WORLD
@@ -74,11 +78,11 @@ int main(int argc, char *argv[]) {
 
     // Cada proceso muestra el valor que recibio
     if (rank == 0) {
-        printf("Oficina Central: %d pedidos asignados.\n",
-               pedido_recibido);
+        printf("Oficina Central: %d pedidos asignados, %d empleados disponibles.\n",
+               datos_recibidos[0], datos_recibidos[1]);
     } else {
-        printf("Sucursal %d: %d pedidos asignados.\n",
-               rank, pedido_recibido);
+        printf("Sucursal %d: %d pedidos asignados, %d empleados disponibles.\n",
+               rank, datos_recibidos[0], datos_recibidos[1]);
     }
 
     // Finaliza correctamente el entorno MPI
