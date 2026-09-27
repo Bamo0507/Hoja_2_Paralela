@@ -27,6 +27,7 @@ int main(int argc, char *argv[]) {
     int rank;
     int size;
     float ventas;
+    int pedidos;
 
     // Inicializa el entorno MPI: debe ejecutarse antes de utilizar otras funciones MPI
     MPI_Init(&argc, &argv);
@@ -48,14 +49,19 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    // La Sucursal 1 genera y envia su reporte de ventas
+    // La Sucursal 1 genera y envia su reporte de ventas y pedidos
     if (rank == 1) {
 
         ventas = 1250.75;
+        pedidos = 48;
 
         printf("Sucursal 1: ventas del dia = Q%.2f\n", ventas);
+        printf("Sucursal 1: pedidos procesados = %d\n", pedidos);
 
+        // Ventas: Q1250.75 (tag 100) y Pedidos: 48 (tag 200)
+        // Un MPI_Send independiente para cada dato
         MPI_Send(&ventas, 1, MPI_FLOAT, 0, 100, MPI_COMM_WORLD);
+        MPI_Send(&pedidos, 1, MPI_INT, 0, 200, MPI_COMM_WORLD);
 
         printf("Sucursal 1: reporte enviado a Oficina Central.\n");
     }
@@ -63,10 +69,13 @@ int main(int argc, char *argv[]) {
     // La Oficina Central recibe el reporte enviado por la Sucursal 1
     if (rank == 0) {
 
-        MPI_Recv(&ventas, 1, MPI_FLOAT, 1, 100,MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        // Cada MPI_Recv espera el tag correspondiente a su dato
+        MPI_Recv(&ventas, 1, MPI_FLOAT, 1, 100, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(&pedidos, 1, MPI_INT, 1, 200, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
         printf("Oficina Central: reporte recibido.\n");
         printf("Ventas reportadas por Sucursal 1: Q%.2f\n", ventas);
+        printf("Pedidos procesados por Sucursal 1: %d\n", pedidos);
     }
 
     // Finaliza correctamente el entorno MPI
